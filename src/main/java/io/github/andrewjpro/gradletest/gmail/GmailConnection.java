@@ -1,4 +1,4 @@
-package io.github.andrewjpro.gradletest;
+package io.github.andrewjpro.gradletest.gmail;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -11,7 +11,6 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
-import com.google.api.services.gmail.model.Profile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +37,18 @@ public class GmailConnection {
         }
     }
 
+    public static Gmail createGmailConnection() {
+        Gmail service = null;
+
+        try {
+            service = getGmailService();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return service;
+    }
+
     private static Credential authorize() throws IOException {
         InputStream in = GmailConnection.class.getResourceAsStream("/client_secret.json");
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
@@ -51,14 +62,4 @@ public class GmailConnection {
         Credential credential = authorize();
         return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
     }
-
-    public static void main(String[] args) throws IOException {
-        Gmail service = getGmailService();
-
-        String userId = "me";
-
-        Profile userProfile = service.users().getProfile(userId).execute();
-        System.out.println(userProfile.toPrettyString());
-    }
-
 }
